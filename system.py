@@ -10,7 +10,8 @@ class System:
         self.show_options()
 
     def show_options(self):    
-        text = """-----------------------------        
+        while True:
+            text = """-----------------------------        
 Bem vindo ao sistema
 -----------------------------
 Escolha uma das opções abaixo:
@@ -18,19 +19,22 @@ Escolha uma das opções abaixo:
 2) Ler cadastro(s) de cliente(s)
 3) Atualizar um cadastro de cliente
 4) Deletar um cadastro de cliente
+5) Sair
 -----------------------------"""
-        print(text)
-        answer = input()
-                
-        match answer:
-            case "1":
-                self.create_customer()
-            case "2":
-                self.read_register()
-            case "3":
-                self.update_customer()
-            case "4":
-                self.delete_customer()
+            print(text)
+            answer = input()
+                    
+            match answer:
+                case "1":
+                    self.create_customer()
+                case "2":
+                    self.read_register()
+                case "3":
+                    self.update_customer()
+                case "4":
+                    self.delete_customer()
+                case '5':
+                    break
 
     def _format_content(self, content, divisor=True):
         format_keys = structures.DOCUMENT
@@ -119,10 +123,54 @@ De qual forma você deseja realizar a leitura?
             self._format_content(x)      
 
     def update_customer(self):
-        pass
+        os.system('clear')
+        time.sleep(1)
+        text = """-----------------------------
+Insira o registro que você deseja alterar:
+-----------------------------"""
+        print(text)
+
+        input_text = structures.DOCUMENT[self.crud.primary_key] + ": "
+
+        cpf_input = input(input_text)
+        status, content = self.crud.read_data(query={"cpf": cpf_input})
+        if status:
+            text = """-----------------------------
+Quais novos valores você deseja inserir?
+-----------------------------"""
+            print(text)
+            document = structures.DOCUMENT.copy()
+            for key in structures.DOCUMENT.keys():
+                if key in content[0].keys():
+                    document[key] = content[0][key]
+
+                if key != self.crud.primary_key:
+                    answer = input(f"{structures.DOCUMENT[key]}: ")
+                    if answer != "":
+                        document[key] = answer
+            
+            status = self.crud.update_customer(cpf_input, document)
+            if status:
+                print("Registro atualizado com sucesso!")
+            else:
+                print("Não foi possível atualizar o registro.")
+
 
     def delete_customer(self):
-        pass
+        os.system('clear')
+        time.sleep(1)
+        text = """-----------------------------
+Insira o registro que você deseja excluir:
+-----------------------------"""
+        print(text)
 
+        input_text = structures.DOCUMENT[self.crud.primary_key] + ": "
+
+        primarykey_input = input(input_text)
+        status = self.crud.delete_customer(primarykey_input)
+        if status:
+            print("Registro deletado com sucesso!")
+        else:
+            print("Não foi possível deletar o registro.")
 
 system = System(local_condition=True, db_name='Clientes', collection_name='Clientes', primary_key="cpf")
