@@ -69,8 +69,7 @@ def delete():
     form = Form(tk, root, "Deletar Cliente")
     
     cpf_field = Field(tk, form, "CPF:")
-    
-    tk.Button(form, text="Deletar", command=confirm).grid(row=1, column=0, columnspan=2, pady=10)
+    Button(tk, form, "Deletar", confirm)  
 
 def update_table(data):
     for row in tree.get_children():
