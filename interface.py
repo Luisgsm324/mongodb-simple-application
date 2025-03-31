@@ -51,7 +51,7 @@ def read_one():
     form = Form(tk, root, "Buscar Cliente")
 
     field_dropdown = Dropdown(tk, form, "Campo:", ['cpf', "nome", "email"], True, 'cpf')
-    value_field = Field(tk, form, "CPF:")
+    value_field = Field(tk, form, "Valor:")
     
     Button(tk, form, "Buscar", search)
 
