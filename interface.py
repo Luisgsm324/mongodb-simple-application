@@ -1,5 +1,8 @@
+import json
 import tkinter as tk
 from tkinter import ttk, messagebox
+
+import bson
 from crud import CrudDB
 from structures import DOCUMENT
 from components import Dropdown, Field, Button, Form
@@ -92,11 +95,14 @@ def update():
 
         form = Form(tk, root, "Atualizar Cliente")      
 
-        for key in DOCUMENT.keys():
-            entry = Field(tk, form, DOCUMENT[key], data[key])
-            entries[key] = entry
+        if not isinstance(data, dict):
+            data = data[0]
 
-        Button(tk, form, "Cadastrar", submit)
+        for idx, key in enumerate(DOCUMENT.keys()):
+            entries[key] = Field(tk, form, DOCUMENT[key])
+            entries[key].insert(0, data.get(key, ''))
+
+        Button(tk, form, "Atualizar", submit)
 
     def search():
         field = field_dropdown.get()
@@ -107,16 +113,18 @@ def update():
             success, data = crud.read_data({field: valor})
         
         if success and data:
-            update_table([data] if type(data) == dict else data)
+            if hasattr(data, 'next'):
+                data = list(data)
+            update_table([data] if isinstance(data, dict) else data)
             form1.destroy()
-            show_user_data(data)
+            show_user_data(data[0] if isinstance(data, list) else data)
         else:
             messagebox.showwarning("Aviso", "Cliente não encontrado!")
 
     form1 = Form(tk, root, "Buscar Cliente")
 
     field_dropdown = Dropdown(tk, form1, "Campo:", ['cpf', "nome", "email"], True, 'cpf')
-    value_field = Field(tk, form1, "CPF:")
+    value_field = Field(tk, form1, "Valor:")
     
     Button(tk, form1, "Buscar", search)
 
