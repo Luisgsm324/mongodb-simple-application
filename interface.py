@@ -16,6 +16,7 @@ root.geometry("800x600")
 def register():
     def submit():
         values = {key: entries[key].get() for key in DOCUMENT.keys()}
+        values['idade'] = int(values['idade'] )
         success = crud.create_customer(values['cpf'], values)
         if success:
             messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso!")
@@ -135,7 +136,7 @@ def filter_data():
         value = value_field.get()
         
         try:
-            if field in ['idade']:
+            if field == 'idade':
                 value = int(value)
         except ValueError:
             messagebox.showerror("Erro", "Valor inválido para o campo numérico!")
@@ -157,6 +158,8 @@ def filter_data():
         
         success, data = crud.read_data(query)
         if success and data:
+            if hasattr(data, 'next'):
+                data = list(data)
             update_table(data)
             form.destroy()
         else:
@@ -164,7 +167,7 @@ def filter_data():
 
     form = Form(tk, root, "Filtrar Clientes")
 
-    field_dropdown = Dropdown(tk, form, "Campo:", list(DOCUMENT.keys()), True, 'cpf')
+    field_dropdown = Dropdown(tk, form, "Campo:", ['idade'], True, 'idade')
     
     operator_field = Field(tk, form, "Operador (=, >, >=, <, <=, !=):")
     
